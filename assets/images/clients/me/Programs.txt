@@ -1,0 +1,170 @@
+########### BUBBLE SORT ###############
+def b_sort(a):
+    n = len(a)
+    for i in range(n):
+        for j in range (0, n-i-1):
+            if a[j]>a[j +1]:
+                a[j], a[j+1] = a[j+1], a[j]
+
+a = [64, 34, 25, 12, 22, 11, 90]
+#a= [int(x) for x in input().split()]
+b_sort(a)
+print("The sorted list through BUBBLE SORT is ", a)
+	*** descending order ***
+def b_sort(a):
+    n = len(a)
+    for i in range(n):
+        for j in range (0, n-i-1):
+            if a[j]<a[j +1]:
+                a[j], a[j+1] = a[j+1], a[j]
+
+a = [64, 34, 25, 12, 22, 11, 90]
+#a= [int(x) for x in input().split()]
+b_sort(a)
+print("The sorted list through BUBBLE SORT is ", a)
+
+
+########### INSERTION SORT ############
+def i_sort(a):
+    for i in range(1, len(a)):
+        temp = a[i]
+        pos = i
+
+        while pos > 0 and a[pos - 1] > temp:
+            a[pos] = a[pos - 1]
+            pos -= 1
+
+        a[pos] = temp
+
+print("Enter elements into the list (separated by spaces): ")
+a = [int(x) for x in input().split()]
+i_sort(a)
+print("The sorted list is", a)
+	*** descending order  ***
+def i_sort(a):
+    for i in range(1, len(a)):
+        temp = a[i]
+        pos = i
+
+        while pos > 0 and a[pos - 1] < temp:
+            a[pos] = a[pos - 1]
+            pos -= 1
+
+        a[pos] = temp
+
+print("Enter elements into the list (separated by spaces): ")
+a = [int(x) for x in input().split()]
+i_sort(a)
+print("The sorted list is", a)
+
+########## SELECTION SORT ###########
+
+def s_sort(a):
+    for i in range(len(a)):
+        least = i
+        for k in range (i + 1, len(a)):
+            if a[k] < a[least]:
+                least = k
+                swap (a, least, i)
+def swap(a, least, i):
+    temp = a[least]
+    a[least] = a[i]
+    a[i] = temp
+            
+
+a = [2, 34, 25, 12, 22, 0, 90]
+s_sort(a)
+print ("The sorted list through SELECTION SORT is", a)
+	*** descending order ***
+def s_sort(a):
+    for i in range(len(a)):
+        most = i
+        for k in range (i + 1, len(a)):
+            if a[k] > a[least]:
+                most = k
+                swap (a, most, i)
+def swap(a, most, i):
+    temp = a[most]
+    a[most] = a[i]
+    a[i] = temp
+            
+
+a = [2, 34, 25, 12, 22, 0, 90]
+s_sort(a)
+print ("The sorted list through SELECTION SORT is", a)
+
+############ LINEAR SEARCH ############
+def l_search(a,x,l,n): 
+    if l<n:
+        if a[l]==x:
+          print("The element found at",l+1,"position")
+        else: 
+          l_search(a,x,l+1,n) 
+    else: 
+        print("Element not found") 
+print("Enter list:") 
+a=[int(b) for b in input().split()] 
+# a = [12, 3, 5, 1, 89, 21]
+x=eval(input("Enter the search element :" ))
+# x = 3 
+n=len(a) 
+l_search(a,x,0,n)
+
+############ BINARY SEARCH ############
+def b_search(a,x,l,n):
+    if l<=n: 
+       mid=(l+n)//2 
+       if a[mid]==x: 
+          print("The element found at",mid+ 1 ,"position") 
+       else: 
+          if a[mid]>x: 
+             b_search(a,x,l,mid-1) 
+          else: 
+             b_search(a,x,mid+ 1 ,n) 
+    else: 
+       print("Element not found") 
+print("Enter list:") 
+a=[int(b) for b in input().split()] 
+list.sort(a) 
+print("the sorted list is",a) 
+x=eval(input("Enter the search element:")) 
+n=len(a) 
+b_search(a,x,0,n) 
+
+############ FIBONACCI SEARCH ############
+def f_search(a,x,n):
+    f0=0
+    f1 =1
+    f2=f0+f1
+    while f2<n:
+        f0=f1 
+        f1 =f2
+        f2=f0+f1 
+    offset=-1
+    while f1>1:
+        i = min(offset+f0, n-1)
+        if (a[i]<x):
+          f2=f1 
+          f1=f0
+          f0=f2-f1
+          offset = i 
+        elif (a[i]>x):
+          f2=f0 
+          f1 =f1-f2
+          f0=f2-f1
+        else : 
+          return i 
+    if(f1 and a[offset+1]==x):
+        return offset+1
+    return -1 
+print("Enter list:")
+a=[int(b) for b in input().split()] 
+list.sort(a) 
+print("the sorted list is",a) 
+x=eval(input("Enter the search element:")) 
+n=len(a) 
+pos=f_search(a,x,n) 
+if pos>=0: 
+    print("The element found at",pos+1,"position") 
+else: 
+    print("Element not found") 

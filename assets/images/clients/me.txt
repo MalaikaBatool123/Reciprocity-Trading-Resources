@@ -1,0 +1,194 @@
+k mean
+#import libraries
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import random as rd
+
+dataset=pd.read_csv('Mall_Customers.csv')
+dataset.describe()
+
+X = dataset.iloc[:, [3, 4]].values
+
+m=X.shape[0] #number of training examples
+n=X.shape[1] #number of features. Here n=2
+n_iter=100
+
+K=5 # number of clusters
+
+Centroids=np.array([]).reshape(n,0)
+
+for i in range(K):
+    rand=rd.randint(0,m-1)
+    Centroids=np.c_[Centroids,X[rand]]
+    
+Output={}
+EuclidianDistance=np.array([]).reshape(m,0)
+
+for k in range(K):
+       tempDist=np.sum((X-Centroids[:,k])**2,axis=1)
+       EuclidianDistance=np.c_[EuclidianDistance,tempDist]
+C=np.argmin(EuclidianDistance,axis=1)+1
+
+Y={}
+for k in range(K):
+    Y[k+1]=np.array([]).reshape(2,0)
+for i in range(m):
+    Y[C[i]]=np.c_[Y[C[i]],X[i]]
+for k in range(K):
+    Y[k+1]=Y[k+1].T
+for k in range(K):
+    Centroids[:,k]=np.mean(Y[k+1],axis=0)
+
+for i in range(n_iter):
+     #step 2.a
+      EuclidianDistance=np.array([]).reshape(m,0)
+      for k in range(K):
+          tempDist=np.sum((X-Centroids[:,k])**2,axis=1)
+          EuclidianDistance=np.c_[EuclidianDistance,tempDist]
+      C=np.argmin(EuclidianDistance,axis=1)+1
+     #step 2.b
+      Y={}
+      for k in range(K):
+          Y[k+1]=np.array([]).reshape(2,0)
+      for i in range(m):
+          Y[C[i]]=np.c_[Y[C[i]],X[i]]
+     
+      for k in range(K):
+          Y[k+1]=Y[k+1].T
+    
+      for k in range(K):
+          Centroids[:,k]=np.mean(Y[k+1],axis=0)
+      Output=Y
+
+plt.scatter(X[:,0],X[:,1],c='black',label='unclustered data')
+plt.xlabel('Income')
+plt.ylabel('Number of transactions')
+plt.legend()
+plt.title('Plot of data points')
+plt.show()
+
+color=['red','blue','green','cyan','magenta']
+labels=['cluster1','cluster2','cluster3','cluster4','cluster5']
+for k in range(K):
+    plt.scatter(Output[k+1][:,0],Output[k+1][:,1],c=color[k],label=labels[k])
+plt.scatter(Centroids[0,:],Centroids[1,:],s=300,c='yellow',label='Centroids')
+plt.xlabel('Income')
+plt.ylabel('Number of transactions')
+plt.legend()
+plt.show()
+
+# Using the elbow method to find the optimal number of clusters  
+from sklearn.cluster import KMeans  
+wcss = []  
+for i in range(1, 11):  
+    kmeans = KMeans(n_clusters = i, init = 'k-means++', random_state = 42)  
+    kmeans.fit(X)  
+    wcss.append(kmeans.inertia_)  
+plt.plot(range(1, 11), wcss)  
+plt.title('The Elbow Method')  
+plt.xlabel('Number of clusters')  
+plt.ylabel('WCSS')  
+plt.show()  
+
+# Fitting K-Means to the dataset  
+kmeans = KMeans(n_clusters = 5, init = 'k-means++', random_state = 42)
+y_kmeans = kmeans.fit_predict(X)
+
+# Visualising the clusters  
+plt.scatter(X[y_kmeans == 0, 0], X[y_kmeans == 0, 1], s = 50, c = 'red', label = 'Careful')  
+plt.scatter(X[y_kmeans == 1, 0], X[y_kmeans == 1, 1], s = 50, c = 'blue', label = 'Standard')  
+plt.scatter(X[y_kmeans == 2, 0], X[y_kmeans == 2, 1], s = 50, c = 'green', label = 'Target')  
+plt.scatter(X[y_kmeans == 3, 0], X[y_kmeans == 3, 1], s = 50, c = 'cyan', label = 'Careless')  
+plt.scatter(X[y_kmeans == 4, 0], X[y_kmeans == 4, 1], s = 50, c = 'magenta', label = 'Sensible')  
+plt.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], s = 300, c = 'yellow', label = 'Centroids')  
+plt.title('Clusters of customers')  
+plt.xlabel('Annual Income (k$)')  
+plt.ylabel('Spending Score (1-100)')  
+plt.legend()  
+plt.show()  
+
+
+#random initialization
+i=rd.randint(0,X.shape[0])
+Centroid_temp=np.array([X[i]])
+K=5
+for k in range(1,K):
+    D=np.array([]) 
+    for x in X:
+        D=np.append(D,np.min(np.sum((x-Centroid_temp)**2)))
+    prob=D/np.sum(D)
+    cummulative_prob=np.cumsum(prob)
+    r=rd.random()
+    i=0
+    for j,p in enumerate(cummulative_prob):
+        if r<p:
+            i=j
+            break
+    Centroid_temp=np.append(Centroid_temp,[X[i]],axis=0)
+    
+    
+Centroids_rand=np.array([]).reshape(2,0)
+
+
+for i in range(K):
+    rand=rd.randint(0,m-1)
+    Centroids_rand=np.c_[Centroids_rand,X[rand]]
+plt.scatter(X[:,0],X[:,1])
+plt.scatter(Centroid_temp[:,0],Centroid_temp[:,1],s=200,color='yellow',label='Kmeans++')
+plt.scatter(Centroids_rand[0,:],Centroids_rand[1,:],s=200,color='black',label='Random')
+plt.xlabel('Income')
+plt.ylabel('Number of transactions')
+plt.legend()
+plt.show()
+
+
+# Using the elbow method to find the optimal number of clusters
+from sklearn.cluster import KMeans
+wcss = []
+for i in range(1, 11):
+    kmeans = KMeans(n_clusters = i, init = 'k-means++', random_state = 42)
+    kmeans.fit(X)
+    wcss.append(kmeans.inertia_)
+plt.plot(range(1, 11), wcss)
+plt.title('The Elbow Method')
+plt.xlabel('Number of clusters')
+plt.ylabel('WCSS')
+plt.show()
+
+
+
+percpetron
+
+X = np.array([
+[-2, 4],
+[4, 1],
+[1, 6],
+[2, 4],
+[6, 2] ])
+Next we fold a bias term -1 into the data set. This is needed for the SGD to work.
+X = np.array([
+[-2,4,-1],
+[4,1,-1],
+[1, 6, -1],
+[2, 4, -1],
+[6, 2, -1], ])
+y = np.array([-1,-1,1,1,1])
+def perceptron_sgd_plot(X, Y):
+w = np.zeros(len(X[0]))
+eta = 1
+n = 30
+errors = []
+for t in range(n):
+total_error = 0
+for i, x in enumerate(X):
+if (np.dot(X[i], w)*Y[i]) <= 0:
+total_error += (np.dot(X[i],w)*Y[i])
+w = w + eta*X[i]*Y[i]
+errors.append(total_error*-1)
+plt.figure()
+plt.plot(errors)
+plt.xlabel('Epoch')
+plt.ylabel('Total Loss')
+return w
+print(perceptron_sgd_plot(X,y))
